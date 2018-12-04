@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<tr>
+<label>EMPLOYEE</label><br>
+    <label th:text="'name -  ' + ${employer.name}"></label><br>
+    <label th:text="'surname - ' + ${employer.surname}"></label><br>
+    <label th:text="'degree - ' + ${employer.degree}"><br></label><br><br>
+    <form th:action="@{/updateEmployer}" th:object="${employer}" method="post" >
+        <input type="hidden"  name="employerId" th:value="${employer.id}">
+        <label>name</label>
+        <input th:field="*{name}"/><br>
+        <label>surname</label>
+        <input th:field="*{surname}"/><br>
+        <select th:field="*{degree}">
+            <option th:each="type : ${allDegrees}"
+                    th:value="${type}"
+                    th:text="${type}">Wireframe</option>
+        </select><br>
+        <button type="submit">up dAte</button>
+    </form><br>
+    <td th:each="one:${employer.tasks}">
+        <a th:href="@{/taskDetails(taskId=${one.id})}"><button>TASK</button></a>
+        <label th:text="'task title - ' + ${one.title}"></label><br>
+        <label th:text="'task description - ' + ${one.description}"></label><br>
+        <label th:text="'task status - ' + ${one.status}"><br><br></label><br><br>
+
+    </td>
+</tr>
+
+<form th:action="@{/taskForm}" th:object="${task}" method="post" >
+
+    <input type="hidden"  name="employerId" th:value="${employer.id}">
+    <label>ADD TAsk</label><br>
+    <label>title</label>
+    <input th:field="*{title}"/><br>
+    <label>description</label>
+    <input th:field="*{description}"/><br>
+    <label>End time</label>
+    <input type="date" th:field="*{endTime}"/><br>
+        <li th:each="ty : ${allStatus}">
+            <input type="radio" th:field="*{status}" th:value="${ty}" />
+            <label  th:text="${ ty}">Wireframe</label>
+        </li>
+    <button type="submit">Add</button>
+</form>
+
+</body>
+</html>
+<!--<form action="/taskForm"  method="post" >-->
+    <!--<input type="hidden" name="employer" th:value="*{employer.id}">-->
+    <!--<label>title</label>-->
+    <!--<input type ="text" name="title"/><br>-->
+    <!--<label>description</label>-->
+    <!--<input type="text" name="description"/><br>-->
+    <!--<label>End time</label>-->
+    <!--<input type="date" neme ="endTime"/><br>-->
+    <!--<input type="hidden" name="">-->
+    <!--<button type="submit">Add</button>-->
+<!--</form>-->

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<td>
+    <label th:text="'employee  name - ' + ${task.employer.name}"></label><br>
+    <label th:text="'task title - ' + ${task.title}"></label><br>
+    <label th:text="'task description - ' + ${task.description}"></label><br>
+    <label th:text="'task status - ' + ${task.status}"><br><br></label><br><br>
+    <form th:action="@{/finishedTask}" th:object="${task}" method="post" >
+        <input type="hidden"  name="taskId" th:value="${task.id}">
+        <button type="submit">Finished</button>
+    </form>
+</td>
+
+<form th:action="@{/updateTask}" th:object="${task}" method="post" >
+    <input type="hidden"  name="taskId" th:value="${task.id}">
+    <label>title</label>
+    <input th:field="*{title}"/><br>
+    <label>description</label>
+    <input th:field="*{description}"/><br>
+    <label>End time</label>
+    <input type="date" th:field="*{endTime}"/><br>
+    <li th:each="ty : ${allStatus}">
+        <input type="radio" th:field="*{status}" th:value="${ty}" />
+        <label  th:text="${ ty}">Wireframe</label>
+    </li>
+    <button type="submit">UpDate</button>
+</form>
+
+
+</body>
+</html>

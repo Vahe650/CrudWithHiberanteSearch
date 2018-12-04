@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/employerForm}" th:object="${employer}" method="post" >
+    <label>name</label>
+    <input th:field="*{name}"/><br>
+    <label>surname</label>
+    <input th:field="*{surname}"/><br>
+    <select th:field="*{degree}">
+        <option th:each="type : ${allDegrees}"
+                th:value="${type}"
+                th:text="${type}">Wireframe</option>
+    </select><br>
+    <button type="submit">Add</button>
+</form>
+
+
+
+</body>
+</html>

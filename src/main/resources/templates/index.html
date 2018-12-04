@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<a href="/addEmployer">
+    <button>add employee</button>
+</a><br>
+
+<label>Employees</label>
+<ol>
+    <li th:each="one:${employers}">
+        <span th:text="${one.name}"></span>
+        <span th:text="${one.surname}"></span>
+        <span th:text="${one.degree}"></span>
+        <a th:href="@{/updateEmployersData(employerId=${one.id})}"><button>OK</button></a>
+        <a th:href="@{/deleteEmployer(employerId=${one.id})}"><button>X</button></a>
+    <li>
+</ol>
+</body>
+</html>
