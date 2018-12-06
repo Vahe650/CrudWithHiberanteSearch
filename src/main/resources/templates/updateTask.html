@@ -10,11 +10,13 @@
     <label th:text="'employee  name - ' + ${task.employer.name}"></label><br>
     <label th:text="'task title - ' + ${task.title}"></label><br>
     <label th:text="'task description - ' + ${task.description}"></label><br>
-    <label th:text="'task status - ' + ${task.status}"><br><br></label><br><br>
+    <label th:text="'task status - ' + ${task.status}"><br><br></label><br>
     <form th:action="@{/finishedTask}" th:object="${task}" method="post" >
         <input type="hidden"  name="taskId" th:value="${task.id}">
         <button type="submit">Finished</button>
     </form>
+    <span th:if="${isFinished}">
+        <a th:href="@{/deleteTask(taskId=${task.id})}"><button>X</button></a></span>
 </td>
 
 <form th:action="@{/updateTask}" th:object="${task}" method="post" >
