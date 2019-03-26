@@ -2,16 +2,17 @@ package com.springBoot2.controller;
 
 
 import com.springBoot2.model.Degree;
-import lombok.AllArgsConstructor;
+import com.springBoot2.model.Employer;
 import com.springBoot2.model.Task;
 import com.springBoot2.model.TaskStatus;
+import com.springBoot2.repository.EmployerRepository;
+import com.springBoot2.repository.TaskRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.springBoot2.repository.EmployerRepository;
-import com.springBoot2.repository.TaskRepository;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -23,10 +24,10 @@ public class TaskController {
     private TaskRepository taskRepository;
     private EmployerRepository employerRepository;
 
-
     @RequestMapping(value = "addTask")
     public String addTask(ModelMap map, @RequestParam(name = "employerId", required = false) int id) {
-        map.addAttribute("employer", employerRepository.findById(id).get());
+        Optional<Employer> byId = employerRepository.findById(id);
+        byId.ifPresent(employer -> map.addAttribute("employer", employer));
         map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
         map.addAttribute("allDegrees", Arrays.asList(Degree.values()));
         map.addAttribute("task", new Task());
@@ -35,57 +36,57 @@ public class TaskController {
 
     @RequestMapping(value = "taskForm")
     public String tasskForm(@ModelAttribute("task") Task task, @RequestParam(value = "employerId", required = false) int id) {
-        task.setEmployer(employerRepository.getOne(id));
+        Optional<Employer> byId = employerRepository.findById(id);
+        byId.ifPresent(task::setEmployer);
         taskRepository.save(task);
         return "redirect:/addTask?employerId=" + task.getEmployer().getId();
-
     }
 
     @RequestMapping(value = "/taskDetails")
-    public String updateTaskData(ModelMap map, @RequestParam(value = "taskId",required = false) int id) {
-        boolean isFinished=false;
+    public String updateTaskData(ModelMap map, @RequestParam(value = "taskId", required = false) int id) {
+        boolean isFinished = false;
         Optional<Task> one = taskRepository.findById(id);
-        if (one.get().getStatus().equals(TaskStatus.FINISHED)) {
-            isFinished=true;
+        one.ifPresent(task-> map.addAttribute("task", task));
+        if (one.isPresent()) {
+            boolean status = Optional.ofNullable(one.get().getStatus()).isPresent();
+            Optional<TaskStatus> newStat = Optional.of(TaskStatus.NEW);
+            Optional<TaskStatus> finishedStat = Optional.of(TaskStatus.FINISHED);
+            if (status && one.get().getStatus().equals(finishedStat.get())) {
+                isFinished = true;
+            }
+            map.addAttribute("isFinished", isFinished);
+            map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
+
+            if (status && one.get().getStatus().equals(newStat.get()))
+                one.get().setStatus(TaskStatus.INPROGRESS);
+            one.ifPresent(taskRepository::save);
         }
-        map.addAttribute("isFinished",isFinished);
-        map.addAttribute("task", one.get());
-        map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
-        if (one.get().getStatus().equals(TaskStatus.NEW))
-            one.get().setStatus(TaskStatus.INPROGRESS);
-        taskRepository.save(one.get());
         return "updateTask";
     }
 
     @RequestMapping(value = "/updateTask")
     public String updateTask(@ModelAttribute("task") Task task, @RequestParam(name = "taskId", required = false) int taskId) {
-        Optional<Task> one = taskRepository.findById(taskId);
-        one.get().setTitle(task.getTitle());
-        one.get().setDescription(task.getDescription());
-        one.get().setEndTime(task.getEndTime());
-        one.get().setStatus(task.getStatus());
-        taskRepository.save(one.get());
-        return "redirect:/taskDetails?taskId=" + one.get().getId();
+        Optional<Task> byId = taskRepository.findById(taskId);
+        byId.ifPresent(taskEmploye -> task.setEmployer(taskEmploye.getEmployer()));
+        task.setId(taskId);
+        taskRepository.save(task);
+        return "redirect:/taskDetails?taskId=" + taskId;
     }
 
     @RequestMapping(value = "/finishedTask")
     public String finishedTask(@ModelAttribute("task") Task task,
                                @RequestParam(name = "taskId", required = false) int taskId) {
         Optional<Task> one = taskRepository.findById(taskId);
-        if (one.isPresent()) {
-            one.get().setStatus(TaskStatus.FINISHED);
-            taskRepository.save(one.get());
-        }
-        return "redirect:/taskDetails?taskId=" + one.get().getId();
-
+        one.ifPresent(stat -> stat.setStatus(TaskStatus.FINISHED));
+        one.ifPresent(taskRepository::save);
+        return "redirect:/taskDetails?taskId=" + taskId;
     }
 
     @RequestMapping(value = "/deleteTask")
     public String deleteTask(@RequestParam(name = "taskId", required = false) int taskId) {
         Optional<Task> one = taskRepository.findById(taskId);
-        taskRepository.delete(one.get());
+        one.ifPresent(taskRepository::delete);
         return "redirect:/addTask?employerId=" + one.get().getEmployer().getId();
+
     }
-
-
 }
