@@ -15,7 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 @Controller
 @AllArgsConstructor
@@ -31,6 +35,34 @@ public class TaskController {
         map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
         map.addAttribute("allDegrees", Arrays.asList(Degree.values()));
         map.addAttribute("task", new Task());
+
+        Stream.concat(
+                Stream.of(1, 2, 3),
+                Stream.of())
+                .forEach(System.out::println);
+
+        Stream.Builder<Integer> streamBuider = Stream.<Integer>builder()
+                .add(0)
+                .add(1);
+        for (int i = 2; i <= 8; i += 2) {
+            streamBuider.accept(i);
+        }
+        streamBuider
+                .add(9)
+                .add(10)
+                .build().forEach(System.out::println);
+        IntStream.rangeClosed(0, 5)
+                .forEach(System.out::print);
+        LongStream.range(0, 5)
+                .forEach(System.out::println);
+        System.out.println(Integer.parseInt("11", 16));
+        Stream.of(120, 410, 85, 32, 314, 12)
+                .sorted()
+                .forEach(System.out::println);
+        Comparator.reverseOrder();
+
+        long result = LongStream.range(employerRepository.count(), taskRepository.count()).sum();
+        System.out.println(result);
         return "task";
     }
 
@@ -46,7 +78,7 @@ public class TaskController {
     public String updateTaskData(ModelMap map, @RequestParam(value = "taskId", required = false) int id) {
         boolean isFinished = false;
         Optional<Task> one = taskRepository.findById(id);
-        one.ifPresent(task-> map.addAttribute("task", task));
+        one.ifPresent(task -> map.addAttribute("task", task));
         if (one.isPresent()) {
             boolean status = Optional.ofNullable(one.get().getStatus()).isPresent();
             Optional<TaskStatus> newStat = Optional.of(TaskStatus.NEW);

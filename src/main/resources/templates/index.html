@@ -11,7 +11,18 @@
     <button>add employee</button>
 </a><br>
 
-<label>Employees</label>
+<label>Employees with tasks</label>
+<ol>
+    <li th:each="one:${employersWithTasks}">
+        <span th:text="${one.name}"></span>
+        <span th:text="${one.surname}"></span>
+        <span th:text="${one.degree}"></span>
+        <a th:href="@{/updateEmployersData(employerId=${one.id})}"><button>OK</button></a>
+        <a th:href="@{/deleteEmployer(employerId=${one.id})}"><button>X</button></a>
+    <li>
+</ol>
+<hr>
+<label>Employees without tasks</label>
 <ol>
     <li th:each="one:${employers}">
         <span th:text="${one.name}"></span>

@@ -9,8 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 @Controller
 @AllArgsConstructor
@@ -20,18 +24,30 @@ public class EmployerController {
     private final EmployerRepository employerRepository;
 
 
-
     @GetMapping(value = "/")
     public String indax(ModelMap map) {
-        map.addAttribute("employers", employerRepository.findAll());
-        map.addAttribute("tasks", taskRepository.findAll());
+        Stream<Employer> limit = employerRepository.findAll().stream()
+                .filter(employer -> !employer.getTasks().isEmpty())
+                .limit(25);
+        map.addAttribute("employersWithTasks", limit.collect(Collectors.toList()));
+        Stream<Employer> employerStream = employerRepository.findAll().stream()
+                .filter(employer -> employer.getTasks().isEmpty());
+        map.addAttribute("employers", employerStream.collect(Collectors.toList()));
+
+        employerStream.distinct().forEach(System.out::println);
+        int sum = Stream.of(1, 2, 3, 4, 5)
+                .reduce(10, (acc, x) -> acc + x);
+        System.out.println(sum);
+
+
         return "index";
     }
 
     @RequestMapping(value = "/addEmployer")
     public String addEmployer(ModelMap map) {
         map.addAttribute("employer", new Employer());
-        map.addAttribute("allDegrees", Arrays.asList(Degree.values()));
+        map.addAttribute("allDegrees", Stream.of(Degree.values()).collect(Collectors.toList()));
+
         return "employer";
     }
 
@@ -43,7 +59,7 @@ public class EmployerController {
 
     @RequestMapping(value = "updateEmployersData")
     public String updateEmployersData(@RequestParam(value = "employerId") int id) {
-        return "redirect:/addTask?employerId="+ id;
+        return "redirect:/addTask?employerId=" + id;
 
     }
 
