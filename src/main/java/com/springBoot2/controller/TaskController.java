@@ -12,7 +12,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -66,9 +65,7 @@ public class TaskController {
             task.setEmployer(employer);
             taskRepository.save(task);
         });
-
-
-        return "redirect:/addTask?employerId=" + task.getEmployer().getId();
+        return Optional.ofNullable("redirect:/addTask?employerId=" + byId.get().getId()).orElse("redirect:/error");
     }
 
     @RequestMapping(value = "/taskDetails")
@@ -100,7 +97,7 @@ public class TaskController {
             task.setId(taskId);
             taskRepository.save(task);
         });
-        return "redirect:/taskDetails?taskId=" + taskId;
+        return Optional.ofNullable("redirect:/taskDetails?taskId=" + byId.get().getId()).orElse("redirect:/error");
     }
 
     @RequestMapping(value = "/finishedTask")
@@ -109,7 +106,7 @@ public class TaskController {
         Optional<Task> one = taskRepository.findById(taskId);
         one.ifPresent(stat -> stat.setStatus(TaskStatus.FINISHED));
         one.ifPresent(taskRepository::save);
-        return "redirect:/taskDetails?taskId=" + taskId;
+        return Optional.ofNullable("redirect:/taskDetails?taskId=" + one.get().getId()).orElse("redirect:/error");
     }
 
     @RequestMapping(value = "/deleteTask")
