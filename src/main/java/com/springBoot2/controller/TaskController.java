@@ -1,6 +1,5 @@
 package com.springBoot2.controller;
 
-
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
 import com.springBoot2.model.Task;
@@ -13,9 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -24,7 +21,6 @@ import java.util.stream.Stream;
 @Controller
 @AllArgsConstructor
 public class TaskController {
-
     private TaskRepository taskRepository;
     private EmployerRepository employerRepository;
 
@@ -35,12 +31,10 @@ public class TaskController {
         map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
         map.addAttribute("allDegrees", Arrays.asList(Degree.values()));
         map.addAttribute("task", new Task());
-
         Stream.concat(
                 Stream.of(1, 2, 3),
                 Stream.of())
                 .forEach(System.out::println);
-
         Stream.Builder<Integer> streamBuider = Stream.<Integer>builder()
                 .add(0)
                 .add(1);
@@ -59,8 +53,6 @@ public class TaskController {
         Stream.of(120, 410, 85, 32, 314, 12)
                 .sorted()
                 .forEach(System.out::println);
-        Comparator.reverseOrder();
-
         long result = LongStream.range(employerRepository.count(), taskRepository.count()).sum();
         System.out.println(result);
         return "task";
@@ -88,7 +80,6 @@ public class TaskController {
             }
             map.addAttribute("isFinished", isFinished);
             map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
-
             if (status && one.get().getStatus().equals(newStat.get()))
                 one.get().setStatus(TaskStatus.INPROGRESS);
             one.ifPresent(taskRepository::save);
@@ -99,9 +90,11 @@ public class TaskController {
     @RequestMapping(value = "/updateTask")
     public String updateTask(@ModelAttribute("task") Task task, @RequestParam(name = "taskId", required = false) int taskId) {
         Optional<Task> byId = taskRepository.findById(taskId);
-        byId.ifPresent(taskEmploye -> task.setEmployer(taskEmploye.getEmployer()));
-        task.setId(taskId);
-        taskRepository.save(task);
+        byId.ifPresent(taskEmploye -> {
+            task.setEmployer(taskEmploye.getEmployer());
+            task.setId(taskId);
+            taskRepository.save(task);
+        });
         return "redirect:/taskDetails?taskId=" + taskId;
     }
 
@@ -118,7 +111,8 @@ public class TaskController {
     public String deleteTask(@RequestParam(name = "taskId", required = false) int taskId) {
         Optional<Task> one = taskRepository.findById(taskId);
         one.ifPresent(taskRepository::delete);
-        return "redirect:/addTask?employerId=" + one.get().getEmployer().getId();
+        return Optional.ofNullable("redirect:/addTask?employerId=" + one.get().getEmployer().getId()).orElse("redirect:/error");
+
 
     }
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task,Integer> {
     List<Task> findAllByEmployer(Employer employer);
 
+
 }

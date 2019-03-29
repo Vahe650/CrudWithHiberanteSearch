@@ -3,25 +3,21 @@ package com.springBoot2.controller;
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
 import com.springBoot2.repository.EmployerRepository;
-import com.springBoot2.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 @Controller
 @AllArgsConstructor
 public class EmployerController {
 
-    private final TaskRepository taskRepository;
-    private final EmployerRepository employerRepository;
+
+    private EmployerRepository employerRepository;
 
 
     @GetMapping(value = "/")
@@ -33,13 +29,9 @@ public class EmployerController {
         Stream<Employer> employerStream = employerRepository.findAll().stream()
                 .filter(employer -> employer.getTasks().isEmpty());
         map.addAttribute("employers", employerStream.collect(Collectors.toList()));
-
-        employerStream.distinct().forEach(System.out::println);
         int sum = Stream.of(1, 2, 3, 4, 5)
                 .reduce(10, (acc, x) -> acc + x);
         System.out.println(sum);
-
-
         return "index";
     }
 
@@ -47,13 +39,12 @@ public class EmployerController {
     public String addEmployer(ModelMap map) {
         map.addAttribute("employer", new Employer());
         map.addAttribute("allDegrees", Stream.of(Degree.values()).collect(Collectors.toList()));
-
         return "employer";
     }
 
     @PostMapping(value = "/employerForm")
     public String employerForm(@ModelAttribute(name = "employer") Employer employer) {
-        employerRepository.save(employer);
+        Optional.of(employer).ifPresent(employerRepository::save);
         return "redirect:/";
     }
 
@@ -78,8 +69,7 @@ public class EmployerController {
 
     @RequestMapping(value = "/deleteEmployer")
     public String deleteEmployer(@RequestParam("employerId") int id) {
-        Optional<Employer> employer = employerRepository.findById(id);
-        employer.ifPresent(employerRepository::delete);
+        employerRepository.findById(id).ifPresent(employerRepository::delete);
         return "redirect:/";
     }
 }
