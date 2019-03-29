@@ -12,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -61,8 +62,12 @@ public class TaskController {
     @RequestMapping(value = "taskForm")
     public String tasskForm(@ModelAttribute("task") Task task, @RequestParam(value = "employerId", required = false) int id) {
         Optional<Employer> byId = employerRepository.findById(id);
-        byId.ifPresent(task::setEmployer);
-        taskRepository.save(task);
+        byId.ifPresent((employer) -> {
+            task.setEmployer(employer);
+            taskRepository.save(task);
+        });
+
+
         return "redirect:/addTask?employerId=" + task.getEmployer().getId();
     }
 
