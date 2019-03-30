@@ -1,5 +1,6 @@
 package com.springBoot2.controller;
 
+import com.springBoot2.functonalInterface.TaskFactory;
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
 import com.springBoot2.model.Task;
@@ -27,10 +28,11 @@ public class TaskController {
     @RequestMapping(value = "addTask")
     public String addTask(ModelMap map, @RequestParam(name = "employerId", required = false) int id) {
         Optional<Employer> byId = employerRepository.findById(id);
+        TaskFactory task=Task::new;
         byId.ifPresent(employer -> map.addAttribute("employer", employer));
         map.addAttribute("allStatus", Arrays.asList(TaskStatus.values()));
         map.addAttribute("allDegrees", Arrays.asList(Degree.values()));
-        map.addAttribute("task", new Task());
+        map.addAttribute("task", task.create());
         Stream.concat(
                 Stream.of(1, 2, 3),
                 Stream.of())

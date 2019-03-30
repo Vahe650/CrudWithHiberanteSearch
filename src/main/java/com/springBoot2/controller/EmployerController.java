@@ -1,5 +1,6 @@
 package com.springBoot2.controller;
 
+import com.springBoot2.functonalInterface.EmployerFactory;
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
 import com.springBoot2.repository.EmployerRepository;
@@ -37,7 +38,8 @@ public class EmployerController {
 
     @RequestMapping(value = "/addEmployer")
     public String addEmployer(ModelMap map) {
-        map.addAttribute("employer", new Employer());
+        EmployerFactory<Employer> personFactory = Employer::new;
+        map.addAttribute("employer", personFactory.create());
         map.addAttribute("allDegrees", Stream.of(Degree.values()).collect(Collectors.toList()));
         return "employer";
     }
