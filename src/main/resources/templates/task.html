@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
+<a class="underline" href="/home">
+    <button class="login100-form-btn">
+        Գլխավոր
+    </button>
+</a>
 <tr>
 <label>EMPLOYEE</label><br>
     <label th:text="'name -  ' + ${employer.name}"></label><br>
@@ -44,7 +49,7 @@
     <input type="date" th:field="*{endTime}"/><br>
         <li th:each="ty : ${allStatus}">
             <input type="radio" th:field="*{status}" th:value="${ty}" />
-            <label  th:text="${ ty}">Wireframe</label>
+            <label  th:text="${ty}"></label>
         </li>
     <button type="submit">Add</button>
 </form>

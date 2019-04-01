@@ -6,6 +6,11 @@
     <title>Title</title>
 </head>
 <body>
+<a class="underline" href="/home">
+    <button class="login100-form-btn">
+        Գլխավոր
+    </button>
+</a>
 <form th:action="@{/employerForm}" th:object="${employer}" method="post" >
     <label>name</label>
     <input th:field="*{name}"/><br>

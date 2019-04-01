@@ -1,5 +1,6 @@
 package com.springBoot2.controller;
 
+import com.springBoot2.functonalInterface.EmployerFactory;
 import com.springBoot2.functonalInterface.TaskFactory;
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
@@ -10,6 +11,7 @@ import com.springBoot2.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +26,9 @@ import java.util.stream.Stream;
 public class TaskController {
     private TaskRepository taskRepository;
     private EmployerRepository employerRepository;
+
+
+
 
     @RequestMapping(value = "addTask")
     public String addTask(ModelMap map, @RequestParam(name = "employerId", required = false) int id) {
@@ -63,6 +68,7 @@ public class TaskController {
     @RequestMapping(value = "taskForm")
     public String tasskForm(@ModelAttribute("task") Task task, @RequestParam(value = "employerId", required = false) int id) {
         Optional<Employer> byId = employerRepository.findById(id);
+        EmployerFactory employerFactory = byId::get;
         byId.ifPresent((employer) -> {
             task.setEmployer(employer);
             taskRepository.save(task);
@@ -116,7 +122,5 @@ public class TaskController {
         Optional<Task> one = taskRepository.findById(taskId);
         one.ifPresent(taskRepository::delete);
         return Optional.ofNullable("redirect:/addTask?employerId=" + one.get().getEmployer().getId()).orElse("redirect:/error");
-
-
     }
 }

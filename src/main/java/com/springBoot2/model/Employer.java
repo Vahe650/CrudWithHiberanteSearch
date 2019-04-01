@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "employer")
-public class Employer {
+public class Employer{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
