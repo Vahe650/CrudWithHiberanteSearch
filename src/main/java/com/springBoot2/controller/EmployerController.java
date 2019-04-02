@@ -32,6 +32,11 @@ public class EmployerController {
         return "index1";
     }
 
+    @GetMapping(value = "/")
+    public String home(){
+        return "redirect:/home";
+    }
+
 
 
     @RequestMapping(value = "/addEmployer")
