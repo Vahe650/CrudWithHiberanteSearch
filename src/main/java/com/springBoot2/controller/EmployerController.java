@@ -55,7 +55,9 @@ public class EmployerController {
 
     @RequestMapping(value = "updateEmployersData")
     public String updateEmployersData(@RequestParam(value = "employerId") int id) {
-        return "redirect:/addTask?employerId=" + id;
+        Optional<Employer> byId = employerRepository.findById(id);
+        return Optional.ofNullable("redirect:/addTask?employerId=" + byId.get().getId()).orElse("redirect:/error");
+
 
     }
 
@@ -70,7 +72,7 @@ public class EmployerController {
                     empl.setDegree(employer.getDegree());
                     employerRepository.save(empl);
                 });
-        return "redirect:/addTask?employerId=" + id;
+        return Optional.ofNullable("redirect:/addTask?employerId=" + one.get().getId()).orElse("redirect:/error");
     }
 
     @RequestMapping(value = "/deleteEmployer")
