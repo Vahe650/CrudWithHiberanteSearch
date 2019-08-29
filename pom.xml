@@ -57,6 +57,10 @@
             <artifactId>hibernate-search-orm</artifactId>
             <version>5.11.1.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
 
     </dependencies>
     <properties>

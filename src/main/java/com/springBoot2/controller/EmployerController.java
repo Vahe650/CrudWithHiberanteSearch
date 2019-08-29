@@ -7,8 +7,10 @@ import com.springBoot2.model.Employer;
 import com.springBoot2.repository.EmployerRepository;
 import lombok.AllArgsConstructor;
 import org.hibernate.search.exception.EmptyQueryException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,15 +19,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Controller
-@AllArgsConstructor
 public class EmployerController {
+    @Autowired
     private EmployerRepository employerRepository;
+    @Autowired
     private EmployeeSearchDao employeeSearchDao;
 
 
     @GetMapping(value = "/home")
     public String indax(ModelMap map) {
-        map.addAttribute("employersWithTasks", employerRepository.findAll().stream() .filter(employer -> !employer.getTasks().isEmpty())
+        map.addAttribute("employersWithTasks", employerRepository.findAll().stream().filter(employer -> !employer.getTasks().isEmpty())
                 .limit(25).collect(Collectors.toList()));
         map.addAttribute("employers", employerRepository.findAll().stream().filter(employer -> employer.getTasks().isEmpty()).collect(Collectors.toList()));
         int sum = Stream.of(1, 2, 3, 4, 5)
@@ -35,7 +38,7 @@ public class EmployerController {
     }
 
     @GetMapping(value = "/")
-    public String home(){
+    public String home() {
         return "redirect:/home";
     }
 
@@ -83,24 +86,24 @@ public class EmployerController {
 
 
     @RequestMapping(value = "/result", method = RequestMethod.GET)
-    public String search(@RequestParam(value = "search", required = false) String search, ModelMap  model) {
+    public String search(@RequestParam(value = "search", required = false) String search, ModelMap model) {
         List<Employer> searchResults = null;
-        try {
-            searchResults = employeeSearchDao.getResults(search);
+        if (!StringUtils.isEmpty(search)) {
+            try {
+                searchResults = employeeSearchDao.getResults(search);
 
 
-        } catch (EmptyQueryException ex) {
-            // here you should handle unexpected errors
-            // ...
-            // throw ex;
+            } catch (EmptyQueryException ex) {
+                // here you should handle unexpected errors
+                // ...
+                // throw ex;
+            }
         }
         model.addAttribute("search", searchResults);
         return "search";
 
+
     }
-
-
-
 
 
 }
