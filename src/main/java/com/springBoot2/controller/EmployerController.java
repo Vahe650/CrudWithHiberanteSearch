@@ -1,13 +1,17 @@
 package com.springBoot2.controller;
 
+import com.springBoot2.config.EmployeeSearchDao;
 import com.springBoot2.functonalInterface.EmployerFactory;
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
 import com.springBoot2.repository.EmployerRepository;
 import lombok.AllArgsConstructor;
+import org.hibernate.search.exception.EmptyQueryException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,16 +20,14 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class EmployerController {
     private EmployerRepository employerRepository;
+    private EmployeeSearchDao employeeSearchDao;
+
 
     @GetMapping(value = "/home")
     public String indax(ModelMap map) {
-        Stream<Employer> limit = employerRepository.findAll().stream()
-                .filter(employer -> !employer.getTasks().isEmpty())
-                .limit(25);
-        map.addAttribute("employersWithTasks", limit.collect(Collectors.toList()));
-        Stream<Employer> employerStream = employerRepository.findAll().stream()
-                .filter(employer -> employer.getTasks().isEmpty());
-        map.addAttribute("employers", employerStream.collect(Collectors.toList()));
+        map.addAttribute("employersWithTasks", employerRepository.findAll().stream() .filter(employer -> !employer.getTasks().isEmpty())
+                .limit(25).collect(Collectors.toList()));
+        map.addAttribute("employers", employerRepository.findAll().stream().filter(employer -> employer.getTasks().isEmpty()).collect(Collectors.toList()));
         int sum = Stream.of(1, 2, 3, 4, 5)
                 .reduce(10, (acc, x) -> acc + x);
         System.out.println(sum);
@@ -36,8 +38,6 @@ public class EmployerController {
     public String home(){
         return "redirect:/home";
     }
-
-
 
     @RequestMapping(value = "/addEmployer")
     public String addEmployer(ModelMap map) {
@@ -80,4 +80,27 @@ public class EmployerController {
         employerRepository.findById(id).ifPresent(employerRepository::delete);
         return "redirect:/home";
     }
+
+
+    @RequestMapping(value = "/result", method = RequestMethod.GET)
+    public String search(@RequestParam(value = "search", required = false) String search, ModelMap  model) {
+        List<Employer> searchResults = null;
+        try {
+            searchResults = employeeSearchDao.getResults(search);
+
+
+        } catch (EmptyQueryException ex) {
+            // here you should handle unexpected errors
+            // ...
+            // throw ex;
+        }
+        model.addAttribute("search", searchResults);
+        return "search";
+
+    }
+
+
+
+
+
 }

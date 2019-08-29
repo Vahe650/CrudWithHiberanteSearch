@@ -119,5 +119,16 @@
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.h2database:h2:1.4.197" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.2" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate:hibernate-search-orm:5.11.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate:hibernate-search-engine:5.11.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:5.5.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-misc:5.5.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:5.5.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-facet:5.5.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:5.5.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:5.5.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging-processor:2.1.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging-annotations:2.1.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.jdeparser:jdeparser:2.0.2.Final" level="project" />
   </component>
 </module>

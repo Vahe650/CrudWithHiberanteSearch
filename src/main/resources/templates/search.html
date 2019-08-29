@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form action="/result">
+    <input name="search" type="text">
+    <button >ok</button>
+</form>
+
+
+<div th:if="${not #lists.isEmpty(search)}">
+    <h2>Search Results</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>name</th>
+            <th>rarity level</th>
+            <th>year</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employer : ${search}">
+            <td th:text="${employer.id}">Text ...</td>
+            <td th:text="${employer.name}">Text ...</td>
+            <td th:text="${employer.surname}">Text ...</td>
+            <td th:text="${employer.degree}">Text...</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+</body>
+</html>
