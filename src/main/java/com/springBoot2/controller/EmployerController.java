@@ -90,7 +90,12 @@ public class EmployerController {
         List<Employer> searchResults = null;
         if (!StringUtils.isEmpty(search)) {
             try {
-                searchResults = employeeSearchDao.getResults(search);
+//                searchResults = employeeSearchDao.searchEmployerNameByKeywordQuery(search);
+                searchResults = employeeSearchDao.searchEmployerNameByFuzzyQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerNameByWildcardQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerDescriptionByPhraseQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerNameAndDescriptionBySimpleQueryStringQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerNameAndDescriptionByKeywordQuery(search);
 
 
             } catch (EmptyQueryException ex) {
