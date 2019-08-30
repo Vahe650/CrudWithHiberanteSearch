@@ -3,9 +3,8 @@ package com.springBoot2.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.TermVector;
+import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Index;
 
 import javax.persistence.*;
 import java.util.List;
@@ -23,15 +22,21 @@ public class Employer {
     @Column
     private int id;
     @Column
-    @Field(termVector = TermVector.YES)
+    @Fields({
+            @Field,
+            @Field(name = "sortName", analyze = Analyze.NO, store = Store.NO, index = Index.NO)
+    })
+    @SortableField(forField = "sortName")
     private String name;
-    @Field(termVector = TermVector.YES)
+    @Field
     @Column
     private String surname;
     @Column
-    @Field(termVector = TermVector.YES)
+    @Field
     @Enumerated(EnumType.STRING)
     private Degree degree;
     @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
+    @ContainedIn
+    @IndexedEmbedded(depth = 2)
     private List<Task> tasks;
 }

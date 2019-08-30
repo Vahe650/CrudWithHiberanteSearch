@@ -8,8 +8,12 @@
 <body>
 
 
-<form action="/result">
-    <input name="search" type="text">
+<form action="/resultTask">
+    <input placeholder="task" name="search" type="text">
+    <button >ok</button>
+</form>
+<form action="/resultEmployer">
+    <input placeholder="employer" name="search" type="text">
     <button >ok</button>
 </form>
 
@@ -28,9 +32,9 @@
         <tbody>
         <tr th:each="employer : ${search}">
             <td th:text="${employer.id}">Text ...</td>
-            <td th:text="${employer.name}">Text ...</td>
-            <td th:text="${employer.surname}">Text ...</td>
-            <td th:text="${employer.degree}">Text...</td>
+            <td th:text="${employer.title}">Text ...</td>
+            <td th:text="${employer.description}">Text ...</td>
+            <td th:text="${employer.status}">Text...</td>
         </tr>
         </tbody>
     </table>

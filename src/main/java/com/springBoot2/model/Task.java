@@ -3,6 +3,8 @@ package com.springBoot2.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.search.annotations.*;
+
 
 import javax.persistence.*;
 
@@ -10,6 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Indexed
 @Table(name = "task")
 
 public class Task {
@@ -18,8 +21,10 @@ public class Task {
     @Column
     private int id;
     @Column
+    @Field
     private String title;
     @Column
+    @Field
     private String description;
     @Column(name = "assigned_time")
     private String assignedTime;
@@ -29,5 +34,7 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
     @ManyToOne
+    @ContainedIn
+    @IndexedEmbedded(depth = 2)
     private Employer employer;
 }

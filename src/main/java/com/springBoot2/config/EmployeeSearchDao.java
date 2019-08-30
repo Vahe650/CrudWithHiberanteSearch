@@ -1,7 +1,10 @@
 package com.springBoot2.config;
 
 import com.springBoot2.model.Employer;
+import com.springBoot2.model.Task;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.hibernate.search.engine.ProjectionConstants;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -27,97 +30,113 @@ public class EmployeeSearchDao {
 
     public List<Employer> searchEmployerNameByKeywordQuery(String text) {
 
-        Query keywordQuery = getQueryBuilder()
+        Query keywordQuery = getQueryBuilderForEmployers()
                 .keyword()
                 .onField("name")
                 .matching(text)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(keywordQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(keywordQuery).getResultList();
 
         return results;
     }
 
     public List<Employer> searchEmployerNameByFuzzyQuery(String text) {
-
-        Query fuzzyQuery = getQueryBuilder()
+        Sort sort = getQueryBuilderForEmployers()
+                .sort()
+                .byField("sortName").asc() // Descending order
+                .createSort();
+        Query fuzzyQuery = getQueryBuilderForEmployers()
                 .keyword()
                 .fuzzy()
                 .withEditDistanceUpTo(2)
                 .withPrefixLength(0)
-                .onField("name")
+                .onFields("name", "surname")
+                .matching(text)
+                .createQuery();
+        FullTextQuery fullTextQuery = getJpaQueryForEmployer(fuzzyQuery).setSort(sort);
+        return ((List<Employer>) fullTextQuery.getResultList());
+    }
+
+    public List<Task> searchTasksByEmployerName(String text) {
+        Query fuzzyQuery = getQueryBuilderForEmployersForTasks()
+                .keyword()
+                .fuzzy()
+                .withEditDistanceUpTo(2)
+                .withPrefixLength(0)
+                .onFields("employer.name","title")
                 .matching(text)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(fuzzyQuery).getResultList();
+        List<Task> results = getJpaQueryForTask(fuzzyQuery).getResultList();
 
         return results;
     }
 
     public List<Employer> searchEmployerNameByWildcardQuery(String text) {
 
-        Query wildcardQuery = getQueryBuilder()
+        Query wildcardQuery = getQueryBuilderForEmployers()
                 .keyword()
                 .wildcard()
                 .onField("name")
                 .matching(text)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(wildcardQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(wildcardQuery).getResultList();
 
         return results;
     }
 
     public List<Employer> searchEmployerDescriptionByPhraseQuery(String text) {
 
-        Query phraseQuery = getQueryBuilder()
+        Query phraseQuery = getQueryBuilderForEmployers()
                 .phrase()
                 .withSlop(1)
                 .onField("description")
                 .sentence(text)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(phraseQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(phraseQuery).getResultList();
 
         return results;
     }
 
     public List<Employer> searchEmployerNameAndDescriptionBySimpleQueryStringQuery(String text) {
 
-        Query simpleQueryStringQuery = getQueryBuilder()
+        Query simpleQueryStringQuery = getQueryBuilderForEmployers()
                 .simpleQueryString()
                 .onFields("name", "description")
                 .matching(text)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(simpleQueryStringQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(simpleQueryStringQuery).getResultList();
 
         return results;
     }
 
     public List<Employer> searchEmployerNameByRangeQuery(int low, int high) {
 
-        Query rangeQuery = getQueryBuilder()
+        Query rangeQuery = getQueryBuilderForEmployers()
                 .range()
                 .onField("memory")
                 .from(low)
                 .to(high)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(rangeQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(rangeQuery).getResultList();
 
         return results;
     }
 
     public List<Object[]> searchEmployerNameByMoreLikeThisQuery(Employer entity) {
 
-        Query moreLikeThisQuery = getQueryBuilder()
+        Query moreLikeThisQuery = getQueryBuilderForEmployers()
                 .moreLikeThis()
                 .comparingField("name")
                 .toEntity(entity)
                 .createQuery();
 
-        List<Object[]> results = getJpaQuery(moreLikeThisQuery).setProjection(ProjectionConstants.THIS, ProjectionConstants.SCORE)
+        List<Object[]> results = getJpaQueryForEmployer(moreLikeThisQuery).setProjection(ProjectionConstants.THIS, ProjectionConstants.SCORE)
                 .getResultList();
 
         return results;
@@ -125,26 +144,26 @@ public class EmployeeSearchDao {
 
     public List<Employer> searchEmployerNameAndDescriptionByKeywordQuery(String text) {
 
-        Query keywordQuery = getQueryBuilder()
+        Query keywordQuery = getQueryBuilderForEmployers()
                 .keyword()
                 .onFields("name", "surname")
                 .matching(text)
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(keywordQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(keywordQuery).getResultList();
 
         return results;
     }
 
     public List<Object[]> searchEmployerNameAndDescriptionByMoreLikeThisQuery(Employer entity) {
 
-        Query moreLikeThisQuery = getQueryBuilder()
+        Query moreLikeThisQuery = getQueryBuilderForEmployers()
                 .moreLikeThis()
                 .comparingField("name")
                 .toEntity(entity)
                 .createQuery();
 
-        List<Object[]> results = getJpaQuery(moreLikeThisQuery).setProjection(ProjectionConstants.THIS, ProjectionConstants.SCORE)
+        List<Object[]> results = getJpaQueryForEmployer(moreLikeThisQuery).setProjection(ProjectionConstants.THIS, ProjectionConstants.SCORE)
                 .getResultList();
 
         return results;
@@ -152,24 +171,24 @@ public class EmployeeSearchDao {
 
     public List<Employer> searchEmployerNameAndDescriptionByCombinedQuery(String manufactorer, int memoryLow, int memoryTop, String extraFeature, String exclude) {
 
-        Query combinedQuery = getQueryBuilder()
+        Query combinedQuery = getQueryBuilderForEmployers()
                 .bool()
-                .must(getQueryBuilder().keyword()
+                .must(getQueryBuilderForEmployers().keyword()
                         .onField("name")
                         .matching(manufactorer)
                         .createQuery())
-                .must(getQueryBuilder()
+                .must(getQueryBuilderForEmployers()
                         .range()
                         .onField("memory")
                         .from(memoryLow)
                         .to(memoryTop)
                         .createQuery())
-                .should(getQueryBuilder()
+                .should(getQueryBuilderForEmployers()
                         .phrase()
                         .onField("description")
                         .sentence(extraFeature)
                         .createQuery())
-                .must(getQueryBuilder()
+                .must(getQueryBuilderForEmployers()
                         .keyword()
                         .onField("name")
                         .matching(exclude)
@@ -177,19 +196,27 @@ public class EmployeeSearchDao {
                 .not()
                 .createQuery();
 
-        List<Employer> results = getJpaQuery(combinedQuery).getResultList();
+        List<Employer> results = getJpaQueryForEmployer(combinedQuery).getResultList();
 
         return results;
     }
 
-    private FullTextQuery getJpaQuery(org.apache.lucene.search.Query luceneQuery) {
+    private FullTextQuery getJpaQueryForEmployer(org.apache.lucene.search.Query luceneQuery) {
 
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
         return fullTextEntityManager.createFullTextQuery(luceneQuery, Employer.class);
     }
 
-    private QueryBuilder getQueryBuilder() {
+
+    private FullTextQuery getJpaQueryForTask(org.apache.lucene.search.Query luceneQuery) {
+
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+
+        return fullTextEntityManager.createFullTextQuery(luceneQuery, Task.class);
+    }
+
+    private QueryBuilder getQueryBuilderForEmployers() {
 
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
@@ -198,5 +225,17 @@ public class EmployeeSearchDao {
                 .forEntity(Employer.class)
                 .get();
     }
+
+
+    private QueryBuilder getQueryBuilderForEmployersForTasks() {
+
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+
+        return fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Task.class)
+                .get();
+    }
+
 
 }

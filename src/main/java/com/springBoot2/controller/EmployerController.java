@@ -4,8 +4,8 @@ import com.springBoot2.config.EmployeeSearchDao;
 import com.springBoot2.functonalInterface.EmployerFactory;
 import com.springBoot2.model.Degree;
 import com.springBoot2.model.Employer;
+import com.springBoot2.model.Task;
 import com.springBoot2.repository.EmployerRepository;
-import lombok.AllArgsConstructor;
 import org.hibernate.search.exception.EmptyQueryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -85,8 +85,8 @@ public class EmployerController {
     }
 
 
-    @RequestMapping(value = "/result", method = RequestMethod.GET)
-    public String search(@RequestParam(value = "search", required = false) String search, ModelMap model) {
+    @RequestMapping(value = "/resultEmployer", method = RequestMethod.GET)
+    public String searchEmployer(@RequestParam(value = "search", required = false) String search, ModelMap model) {
         List<Employer> searchResults = null;
         if (!StringUtils.isEmpty(search)) {
             try {
@@ -105,10 +105,35 @@ public class EmployerController {
             }
         }
         model.addAttribute("search", searchResults);
-        return "search";
-
-
+        return "searchEmployer";
     }
+
+        @RequestMapping(value = "/resultTask", method = RequestMethod.GET)
+        public String search(@RequestParam(value = "search", required = false) String search, ModelMap model) {
+            List<Task> searchResults = null;
+            if (!StringUtils.isEmpty(search)) {
+                try {
+//                searchResults = employeeSearchDao.searchEmployerNameByKeywordQuery(search);
+                    searchResults = employeeSearchDao.searchTasksByEmployerName(search);
+//                searchResults = employeeSearchDao.searchEmployerNameByWildcardQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerDescriptionByPhraseQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerNameAndDescriptionBySimpleQueryStringQuery(search);
+//                searchResults = employeeSearchDao.searchEmployerNameAndDescriptionByKeywordQuery(search);
+
+
+                } catch (EmptyQueryException ex) {
+                    // here you should handle unexpected errors
+                    // ...
+                    // throw ex;
+                }
+            }
+            model.addAttribute("search", searchResults);
+            return "searchTasks";
+
+
+
+
+        }
 
 
 }
